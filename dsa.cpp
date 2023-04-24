@@ -1,7 +1,7 @@
 // AUTHOR: singlabharat
 
 /* = = = = = = =
-aay Algorithms
+Array Algorithms
 = = = = = = = */
 
 // Prefix Sums
