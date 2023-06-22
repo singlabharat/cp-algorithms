@@ -254,7 +254,7 @@ vector<pair<int, int>> prime_factors(int n) {
 }
 
 // Sieve of Eratosthenes
-vector<bool> sieve(int n) {
+vector<bool> prime_sieve(int n) {
     vector<bool> prime(n, 1);
     prime[0] = prime[1] = 0;
     for (int i = 2; i * i < n; i++) {
@@ -263,6 +263,18 @@ vector<bool> sieve(int n) {
         }
     }
     return prime;
+}
+
+vector<int> spf_sieve(int n) {
+    vector<int> spf(N, -1);
+    for (int i = 2; i < N; i++) {
+        if (spf[i] == -1) {
+            for (int j = i; j < N; j += i) {
+                if (spf[j] == -1) spf[j] = i;
+            }
+        }
+    }
+    return spf;
 }
 
 // Modular Arithmetic
@@ -489,14 +501,14 @@ int edit_distance(string &s, string &t) {
 }
 
 // Digit DP
-vector<int> get_digts(int n) {
-    vector<int> digts;
+vector<int> get_dgts(int n) {
+    vector<int> dgts;
     while (n > 0) {
-        digts.push_back(n % 10);
+        dgts.push_back(n % 10);
         n /= 10;
     }
-    reverse(begin(digts), end(digts));
-    return digts;
+    reverse(begin(dgts), end(dgts));
+    return dgts;
 }
 
 int dp[19][163][2];
@@ -815,15 +827,15 @@ struct SegTree {
     int n;
     vector<int> st;
 
-    inline int merge(int x, int y) {
+    int merge(int x, int y) {
         return x + y;
     }
 
-    inline int lc(int u) {
+    int lc(int u) {
         return u * 2 + 1;
     }
 
-    inline int rc(int u) {
+    int rc(int u) {
         return u * 2 + 2;
     }
 
@@ -874,23 +886,22 @@ struct LazySegTree {
     int n;
     vector<int> st, lazy;
 
-    inline int merge(int x, int y) {
+    int merge(int x, int y) {
         return max(x, y);
     }
 
-    inline int lc(int u) {
+    int lc(int u) {
         return u * 2 + 1;
     }
 
-    inline int rc(int u) {
+    int rc(int u) {
         return u * 2 + 2;
     }
 
     void push(int u, int l, int r) {
         // if (lazy[u] = -1) return;
         // st[u] = lazy[u];
-        // st[u] = (lazy[u]) * (r - l + 1);
-        st[u] += lazy[u];
+        st[u] = (lazy[u]) * (r - l + 1);
         if (l != r) {
             // lazy[lc(u)] = lazy[u];
             lazy[lc(u)] += lazy[u];
@@ -1010,7 +1021,7 @@ struct SparseTable {
     int n, LOG;
     vector<vector<int>> table;
 
-    inline int merge(int x, int y) {
+    int merge(int x, int y) {
         return min(x, y);
     }
 
@@ -1029,7 +1040,7 @@ struct SparseTable {
     }
 };
 
-// Disjoint Set Union (DSU) / Union Find (UFDS)
+// Disjoint Set Union (DSU)
 struct DSU {
     vector<int> par, size;
     int comps;
@@ -1050,11 +1061,39 @@ struct DSU {
     int find(int u) {
         return (par[u] == u ? u : par[u] = find(par[u]));
     }
-
-    bool same(int u, int v) {
-        return find(u) == find(v);
-    }
 };
+
+// DSU with Rollbacks
+struct DSU {
+    vi par, size;
+    int comps;
+    stack<int> st;
+
+    DSU(int n) : par(n), size(n, 1), comps(n) {
+        iota(begin(par), end(par), 0);
+    }
+
+    void unite(int u, int v) {
+        u = find(u), v = find(v);
+        if (u == v) return;
+        if (size[u] < size[v]) swap(u, v);
+        st.push(v);
+        par[v] = u;
+        size[u] += size[v];
+        comps--;
+    }
+
+    void roll() {
+        int u = st.top();
+        st.pop();
+        par[u] = u;
+        comps++;
+    }
+
+    int find(int u) {
+        return (par[u] == u ? u : find(par[u]));
+    }
+}
 
 // Linked List
 struct LinkedList {
@@ -1106,7 +1145,7 @@ Square Root Techniques
 = = = = = = = = = = */
 
 // Sqrt Decomposition
-const int BLOCK = 800;
+const int BLOCK = 700;
 
 vector<int> b(BLOCK);
 for (int i = 0; i < n; i++) b[i / BLOCK] += a[i];
@@ -1189,7 +1228,6 @@ vector<int> next_greater_element(vector<int> &a) {
     }
     return nge;
 }
-
 
 // Sliding Window Minimums
 vector<int> sliding_window_min(vector<int> &a, int k) {
