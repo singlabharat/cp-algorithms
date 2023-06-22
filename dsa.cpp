@@ -179,9 +179,7 @@ int binary_search(int x, vector<int> &a) {
 }
 
 // Binary Search on Ans
-auto ok = [&](int m) -> bool {
-
-};
+auto ok = [&](int m) -> bool {};
 
 auto binary_search = [&]() -> int {
     int res = -1, l = 0, r = 1e9;
@@ -198,9 +196,7 @@ auto binary_search = [&]() -> int {
 };
 
 // Ternary Search on Max f
-auto f = [&](double x) -> double {
-
-};
+auto f = [&](double x) -> double {};
 
 auto ternary_search = [&]() -> double {
     const double EPS = 1e-9;
@@ -1165,7 +1161,6 @@ auto query = [&](int l, int r) -> int {
     }
     return res;
 };
-
 
 // Mo's Algo
 const int BLOCK_SIZE = 700;
