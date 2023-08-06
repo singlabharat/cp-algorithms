@@ -12,7 +12,7 @@ vector<int> pref_sums(vector<int> &a) {
     return ps;
 }
 
-vector<vector<int>> pref_sums_2d(vector<vector<int>> &a) {
+vector<vector<int>> pref_sums_2D(vector<vector<int>> &a) {
     int n = size(a), m = size(a[0]);
     vector<vector<int>> ps(n + 1, vector<int>(m + 1));
     for (int i = 1; i <= n; i++) {
@@ -23,6 +23,11 @@ vector<vector<int>> pref_sums_2d(vector<vector<int>> &a) {
     return ps;
 }
 
+auto getsum = [&](int r1, int c1, int r2, int c2) {
+    r1++, c1++, r2++, c2++;
+    return ps[r2][c2] - ps[r2][c1 - 1] - ps[r1 - 1][c2] + ps[r1 - 1][c1 - 1];
+};
+
 // Suffix Sums
 vector<int> suff_sums(vector<int> &a) {
     int n = size(a);
@@ -30,11 +35,6 @@ vector<int> suff_sums(vector<int> &a) {
     for (int i = n - 2; i >= 0; i--) ss[i] += ss[i + 1];
     return s;
 }
-
-auto getsum = [&](int i1, int j1, int i2, int j2) {
-    i1++, j1++, i2++, j2++;
-    return ps[i2][j2] - ps[i2][j1 - 1] - ps[i1 - 1][j2] + ps[i1 - 1][j1 - 1];
-};
 
 // Kadane's Algo
 int max_subarr_sum(vector<int> &a) {
@@ -151,7 +151,7 @@ void quick_sort(vector<int> &a, int l, int r) {
 }
 
 // Counting Sort
-vector<int> counting_sort(const vector<int> &a) {
+vector<int> counting_sort(vector<int> &a) {
     int mx = *max_element(begin(a), end(a));
     vector<int> freq(mx + 1);
     for (int i : a) freq[i]++;
@@ -835,11 +835,11 @@ struct SegTree {
         return u * 2 + 2;
     }
 
-    SegTree(const vector<int> &a) : n(size(a)), st(n * 4) {
+    SegTree(vector<int> &a) : n(size(a)), st(n * 4) {
         build(0, 0, n - 1, a);
     }
 
-    void build(int u, int l, int r, const vector<int> &a) {
+    void build(int u, int l, int r, vector<int> &a) {
         if (l == r) {
             st[u] = a[l];
             return;
@@ -895,7 +895,7 @@ struct LazySegTree {
     }
 
     void push(int u, int l, int r) {
-        // if (lazy[u] = -1) return;
+        // if (lazy[u] == -1) return;
         // st[u] = lazy[u];
         st[u] = (lazy[u]) * (r - l + 1);
         if (l != r) {
@@ -908,11 +908,11 @@ struct LazySegTree {
         lazy[u] = 0;
     }
 
-    LazySegTree(const vector<int> &a) : n(size(a)), st(n * 4), lazy(n * 4) {
+    LazySegTree(vector<int> &a) : n(size(a)), st(n * 4), lazy(n * 4) {
         build(0, 0, n - 1, a);
     }
 
-    void build(int u, int l, int r, const vector<int> &a) {
+    void build(int u, int l, int r, vector<int> &a) {
         if (l == r) {
             st[u] = a[l];
             return;
@@ -1021,18 +1021,64 @@ struct SparseTable {
         return min(x, y);
     }
 
-    SparseTable(const vector<int> &a) : n(size(a)), LOG(__lg(n)), table(n, vector<int>(LOG + 1, -1)) {
-        for (int j = 0; j <= LOG; j++) {
-            for (int i = 0; i <= n - (1 << j); i++) {
-                if (j == 0) table[i][j] = a[i];
-                else table[i][j] = merge(table[i][j - 1], table[i + (1 << (j - 1))][j - 1]);
+    SparseTable(vector<int> &a) : n(size(a)), LOG(__lg(n)), table(n, vector<int>(LOG + 1, -1)) {
+        for (int k = 0; k <= LOG; k++) {
+            for (int i = 0; i <= n - (1 << k); i++) {
+                if (k == 0) table[i][0] = a[i];
+                else table[i][k] = merge(table[i][k - 1], table[i + (1 << (k - 1))][k - 1]);
             }
         }
     }
 
     int query(int l, int r) {
-        int j = __lg(r - l + 1);
-        return merge(table[l][j], table[r - (1 << j) + 1][j]);
+        int k = __lg(r - l + 1);
+        return merge(table[l][k], table[r - (1 << k) + 1][k]);
+    }
+};
+
+struct SparseTable2D {
+    int n, m, LOGN, LOGM;
+    vector<vector<vector<vector<int>>>> table;
+
+    int merge(int a, int b) {
+        return max(a, b);
+    }
+
+    int merge(int a, int b, int c, int d) {
+        return max({a, b, c, d});
+    }
+
+    SparseTable2D(vector<vector<int>> &a) :
+        n(size(a)),
+        m(size(a[0])),
+        LOGN(__lg(n)),
+        LOGM(__lg(m)),
+        table(n, vector<vector<vector<int>>>(LOGN + 1, vector<vector<int>>(m, vector<int>(LOGM + 1, -1))))
+    {
+        for (int kn = 0; kn <= LOGN; kn++) {
+            for (int i = 0; i <= n - (1 << kn); i++) {
+                for (int km = 0; km <= LOGM; km++) {
+                    for (int j = 0; j <= m - (1 << km); j++) {
+                        if (kn == 0) {
+                            if (km == 0) table[i][0][j][0] = a[i][j];
+                            else table[i][0][j][km] = merge(table[i][0][j][km - 1], table[i][0][j + (1 << (km - 1))][km - 1]);
+                        } else {
+                            table[i][kn][j][km] = merge(table[i][kn - 1][j][km], table[i + (1 << (kn - 1))][kn - 1][j][km]);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    int query(int r1, int c1, int r2, int c2) {
+        int kn = __lg(r2 - r1 + 1);
+        int km = __lg(c2 - c1 + 1);
+        return merge(table[r1][kn][c1][km],
+                     table[r1][kn][c2 - (1 << km) + 1][km],
+                     table[r2 - (1 << kn) + 1][kn][c1][km],
+                     table[r2 - (1 << kn) + 1][kn][c2 - (1 << km) + 1][km]
+                    );
     }
 };
 
@@ -1238,15 +1284,15 @@ vector<int> sliding_window_min(vector<int> &a, int k) {
 }
 
 // Bracket Matching
-bool balanced(const string & s) {
+bool balanced(string & s) {
     stack<char> st;
-    const vector<char> open = {'(', '{', '['};
-    const map<char, char> close = {{'(', ')'}, {'{', '}'}, {'[', ']'}};
+    const vector<char> OPEN = {'(', '{', '['};
+    const map<char, char> CLOSE = {{'(', ')'}, {'{', '}'}, {'[', ']'}};
     for (char c : s) {
-        if (open.count(c)) {
+        if (OPEN.count(c)) {
             st.push(c);
         } else {
-            if (empty(st) or close[st.top()] != c) return false;
+            if (empty(st) or CLOSE[st.top()] != c) return false;
             st.pop();
         }
     }
