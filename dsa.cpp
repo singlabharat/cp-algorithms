@@ -1,10 +1,13 @@
-// AUTHOR: SINGLABHARAT
+/* = = = = = = = = =
+AUTHOR: SINGLABHARAT
+= = = = = = = = = */
 
-/* = = = = =
-Array Algos
-= = = = = */
+// convex hull, dp optimizations, iterative segtree, small to large merging, bridges/articulation pts, centroid decomp
 
-// Prefix Sums
+/* = =
+Arrays
+= = */
+
 vector<int> pref_sums(vector<int> &a) {
     int n = size(a);
     vector<int> ps = a;
@@ -23,12 +26,11 @@ vector<vector<int>> pref_sums_2D(vector<vector<int>> &a) {
     return ps;
 }
 
-auto getsum = [&](int r1, int c1, int r2, int c2) {
+auto sum = [&](int r1, int c1, int r2, int c2) {
     r1++, c1++, r2++, c2++;
     return ps[r2][c2] - ps[r2][c1 - 1] - ps[r1 - 1][c2] + ps[r1 - 1][c1 - 1];
 };
 
-// Suffix Sums
 vector<int> suff_sums(vector<int> &a) {
     int n = size(a);
     vector<int> ss = a;
@@ -36,7 +38,6 @@ vector<int> suff_sums(vector<int> &a) {
     return s;
 }
 
-// Kadane's Algo
 int max_subarr_sum(vector<int> &a) {
     int res = -1e9, curr = 0;
     for (int i : a) {
@@ -46,7 +47,6 @@ int max_subarr_sum(vector<int> &a) {
     return res;
 }
 
-// Max Sum Sliding Window
 int sliding_window(vector<int> &a, int k) {
     int n = size(a);
     int curr = accumulate(begin(a), begin(a) + k, 0ll);
@@ -58,7 +58,6 @@ int sliding_window(vector<int> &a, int k) {
     return res;
 }
 
-// Matrix Multiplication
 vector<vector<int>> matrix_mul(vector<vector<int>> &a1, vector<vector<int>> &a2) {
     int n1 = size(a1), m1 = size(a1[0]), m2 = size(a2[0]);
     vector<vector<int>> res(n1, vector<int>(m2));
@@ -70,11 +69,10 @@ vector<vector<int>> matrix_mul(vector<vector<int>> &a1, vector<vector<int>> &a2)
     return res;
 }
 
-/* = = = = = =
-Sorting Algos
-= = = = = = */
+/* = = =
+Sorting
+= = = */
 
-// Bubble Sort
 void bubble_sort(vector<int> &a) {
     int n = size(a);
     for (int i = 0; i < n - 1; i++) {
@@ -84,7 +82,6 @@ void bubble_sort(vector<int> &a) {
     }
 }
 
-// Insertion Sort
 void insertion_sort(vector<int> &a) {
     int n = size(a);
     for (int j = 1; j < n; j++) {
@@ -94,22 +91,17 @@ void insertion_sort(vector<int> &a) {
     }
 }
 
-// Selection Sort
 void selection_sort(vector<int> &a) {
     int n = size(a);
     for (int i = 0; i < n - 1; i++) {
-        int mn = a[i], mn_idx = i;
+        int mni = i;
         for (int j = i + 1; j < n; j++) {
-            if (a[j] < mn) {
-                mn = a[j];
-                mn_idx = j;
-            }
+            if (a[j] < a[mni]) mni = j;
         }
-        swap(a[i], a[mn_idx]);
+        swap(a[i], a[mni]);
     }
 }
 
-// Merge Sort
 void merge(vector<int> &a, int l, int r) {
     int n = r - l + 1;
     int m = (l + r) / 2;
@@ -132,7 +124,6 @@ void merge_sort(vector<int> &a, int l, int r) {
     merge(a, l, r);
 }
 
-// Quick Sort
 int partition(vector<int> &a, int l, int r) {
     int pivot = a[r];
     int pi = l;
@@ -150,7 +141,6 @@ void quick_sort(vector<int> &a, int l, int r) {
     quick_sort(a, pi + 1, r);
 }
 
-// Counting Sort
 vector<int> counting_sort(vector<int> &a) {
     int mx = *max_element(begin(a), end(a));
     vector<int> freq(mx + 1);
@@ -159,14 +149,13 @@ vector<int> counting_sort(vector<int> &a) {
     for (int i = 0; i <= mx; i++) {
         while (freq[i]--) res.push_back(i);
     }
-    return res;
+    a = res;
 }
 
-/* = = = = = = =
-Searching Algos
-= = = = = = = */
+/* = = = =
+Searching
+= = = = */
 
-// Binary Search in Array
 int binary_search(int x, vector<int> &a) {
     l = 0, r = (int)size(a) - 1;
     while (l <= r) {
@@ -178,7 +167,6 @@ int binary_search(int x, vector<int> &a) {
     return -1;
 }
 
-// Binary Search on Ans
 auto ok = [&](int m) -> bool {};
 
 auto binary_search = [&]() -> int {
@@ -195,11 +183,11 @@ auto binary_search = [&]() -> int {
     return res;
 };
 
-// Ternary Search on Max f
+const double EPS = 1e-9;
+
 auto f = [&](double x) -> double {};
 
 auto ternary_search = [&]() -> double {
-    const double EPS = 1e-9;
     double l = 0, r = 1e9;
     while (r - l > EPS) {
         double m1 = l + (r - l) / 3;
@@ -214,7 +202,6 @@ auto ternary_search = [&]() -> double {
 Number Theory
 = = = = = = */
 
-// Primality Test
 bool prime(int n) {
     if (n < 2) return 0;
     for (int i = 2; i * i <= n; i++) {
@@ -223,7 +210,6 @@ bool prime(int n) {
     return 1;
 }
 
-// Factorization
 set<int> factors(int n) {
     set<int> f;
     for (int i = 1; i * i <= n; i++) {
@@ -232,25 +218,23 @@ set<int> factors(int n) {
     return f;
 }
 
-// Prime Factorization
 vector<pair<int, int>> prime_factors(int n) {
     vector<pair<int, int>> pf;
     for (int i = 2; i * i <= n; i++) {
         if (n % i == 0) {
-            int pow = 0;
+            int p = 0;
             while (n % i == 0) {
                 n /= i;
-                pow++;
+                p++;
             }
-            pfs.push_back({i, pow});
+            pf.push_back({i, p});
         }
     }
-    if (n > 1) pfs.push_back({n, 1});
-    return pfs;
+    if (n > 1) pf.push_back({n, 1});
+    return pf;
 }
 
-// Sieve of Eratosthenes
-vector<bool> prime_sieve(int n) {
+vector<bool> sieve_of_eratosthenes(int n) {
     vector<bool> prime(n, 1);
     prime[0] = prime[1] = 0;
     for (int i = 2; i * i < n; i++) {
@@ -273,7 +257,6 @@ vector<int> spf_sieve(int n) {
     return spf;
 }
 
-// Modular Arithmetic
 struct Mint {
     int val;
 
@@ -361,7 +344,6 @@ struct Mint {
     }
 };
 
-// Combinatorics
 vector<Mint> fact;
 
 Mint C(int n, int r) {
@@ -373,7 +355,6 @@ fact.resize(MX);
 fact[0] = 1;
 for (int i = 1; i < MX; i++) fact[i] = fact[i - 1] * i;
 
-// Euclid's GCD
 int gcd(int a, int b) {
     return (b == 0 ? a : gcd(b, a % b));
 }
@@ -381,15 +362,14 @@ int gcd(int a, int b) {
 pair<int, int> extended_gcd(int a, int b) {
     if (b == 0) return {1, 0};
     auto [x2, y2] = extended_gcd(b, a % b);
-    return {y2, x2 - (a / b) * y2};
+    return {y2, x2 - a / b * y2};
 }
 
 
-/* = = = = =
-String Algos
-= = = = = */
+/* = = =
+Strings
+= = = */
 
-// Hashing
 Mint my_hash(string s) {
     int n = size(s);
     Mint h = 0;
@@ -397,7 +377,6 @@ Mint my_hash(string s) {
     return h;
 }
 
-// Rabin-Karp
 vector<int> rabin_karp(string &s, string &t) {
     int n = size(s), m = size(t);
     Mint p = power(Mint(31), m - 1);
@@ -412,7 +391,6 @@ vector<int> rabin_karp(string &s, string &t) {
     return pos;
 }
 
-// Knuth-Morris-Pratt (KMP)
 vector<int> pref_func(string &s) {
     int n = size(s);
     vector<int> lps(n);
@@ -439,7 +417,7 @@ vector<int> kmp(string &s, string &t) {
 Dynamic Programming (DP)
 = = = = = = = = = = = */
 
-int knapsack_01(vector<pair<int, int>> &items, int cap) {
+int knapsack(vector<pair<int, int>> &items, int cap) {
     vector<int> dp(cap + 1);
     for (auto [w, c] : items) {
         for (int i = cap; i >= w; i--) dp[i] = max(dp[i], c + dp[i - w]);
@@ -452,7 +430,7 @@ int longest_common_subseq(vector<int> &a, vector<int> &b) {
     vector<vector<int>> dp(n + 1, vector<int>(m + 1));
     for (int i = 1; i <= n; i++) {
         for (int j = 1; j <= m; j++) {
-            if (a[i - 1] == y[j - 1]) dp[i][j] = dp[i - 1][j - 1] + 1;
+            if (a[i - 1] == b[j - 1]) dp[i][j] = dp[i - 1][j - 1] + 1;
             else dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
         }
     }
@@ -497,27 +475,27 @@ int edit_distance(string &s, string &t) {
 }
 
 // Digit DP
-vector<int> get_dgts(int n) {
-    vector<int> dgts;
+vector<int> digts(int n) {
+    vector<int> d;
     while (n > 0) {
-        dgts.push_back(n % 10);
+        d.push_back(n % 10);
         n /= 10;
     }
-    reverse(begin(dgts), end(dgts));
-    return dgts;
+    reverse(begin(d), end(d));
+    return d;
 }
 
 int dp[19][163][2];
 
 int rec(int pos, int sod, bool tight, vector<int> &num) {
-    if (pos == size(num)) return sod == 42;
+    if (pos == size(num)) return sod == ?;
     int &res = dp[pos][sod][tight];
     if (res != -1) return res;
     res = 0;
-    int limit = (tight ? num[pos] : 9);
-    for (int dgt = 0; dgt <= limit; dgt++) {
-        int new_sod = sod + dgt;
-        bool new_tight = tight and dgt == limit;
+    int lim = (tight ? num[pos] : 9);
+    for (int d = 0; d <= lim; d++) {
+        int new_sod = sod + d;
+        bool new_tight = tight and d == lim;
         res += rec(pos + 1, new_sod, new_tight, num);
     }
     return res;
@@ -525,20 +503,19 @@ int rec(int pos, int sod, bool tight, vector<int> &num) {
 
 int digit_dp(int l, int r) {
     memset(dp, -1, sizeof(dp));
-    vector<int> dgts_l = get_dgts(l - 1);
-    int ans_l = (l == 0 ? 0 : rec(0, 0, true, dgts_l));
+    vector<int> dl = digts(l - 1);
+    int ansl = (l == 0 ? 0 : rec(0, 0, true, dl));
     memset(dp, -1, sizeof(dp));
-    vector<int> dgts_r = get_dgts(r);
-    int ans_r = rec(0, 0, true, dgts_r);
-    return ans_r - ans_l;
+    vector<int> dr = digts(r);
+    int ansr = rec(0, 0, true, dr);
+    return ansr - ansl;
 }
 
 
-/* = = = = =
-Graph Algos
-= = = = = */
+/* = =
+Graphs
+= = */
 
-// Unweighted Graph Input
 int n, m;
 cin >> n >> m;
 vector<vector<int>> g(n);
@@ -550,7 +527,6 @@ for (int i = 0; i < m; i++) {
     g[v].push_back(u);
 }
 
-// Weighted Graph Input
 int n, m;
 cin >> n >> m;
 vector<vector<pair<int, int>>> g(n);
@@ -562,7 +538,6 @@ for (int i = 0; i < m; i++) {
     g[v].push_back(pair(u, w));
 }
 
-// BFS on Graphs
 auto bfs = [&](int src) -> void {
     vector<bool> vis(n);
     queue<int> q;
@@ -580,7 +555,6 @@ auto bfs = [&](int src) -> void {
     }
 };
 
-// DFS on Graphs
 vector<bool> vis(n);
 function<void(int)> dfs = [&](int u) {
     vis[u] = true;
@@ -591,7 +565,6 @@ function<void(int)> dfs = [&](int u) {
     }
 };
 
-// DFS on Trees
 function<void(int, int)> dfs = [&](int u, int p) {
     for (int v : tree[u]) {
         if (v != p) {
@@ -600,7 +573,6 @@ function<void(int, int)> dfs = [&](int u, int p) {
     }
 };
 
-// DFS on Matrix
 const vector<pair<int, int>> DIRS = {{ -1, 0}, {0, 1}, {1, 0}, {0, -1}};
 vector<vector<bool>> vis(n, vector<bool>(m));
 
@@ -611,16 +583,15 @@ auto valid = [&](int i, int j) -> bool {
 function<void(int, int)> dfs = [&](int i, int j) {
     vis[i][j] = true;
     for (auto [di, dj] : DIRS) {
-        int newi = i + di, newj = j + dj;
-        if (valid(newi, newj)) {
-            dfs(newi, newj);
+        int new_i = i + di, new_j = j + dj;
+        if (valid(new_i, new_j)) {
+            dfs(new_i, new_j);
         }
     }
 };
 
-// Shortest Path using BFS
 auto bfs = [&](int src) -> vector<int> {
-    vector<int> dist(n, 1e9);
+    vector<int> dist(n, INF);
     queue<int> q;
     q.push(src);
     dist[src] = 0;
@@ -628,7 +599,7 @@ auto bfs = [&](int src) -> vector<int> {
         int u = q.front();
         q.pop();
         for (int v : g[u]) {
-            if (dist[v] == 1e9) {
+            if (dist[v] == INF) {
                 dist[v] = dist[u] + 1;
                 q.push(v);
             }
@@ -637,15 +608,15 @@ auto bfs = [&](int src) -> vector<int> {
     return dist;
 };
 
-// Dijkstra's Algo
 auto dijkstra = [&](int src) -> vector<int> {
     priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
-    vector<int> dist(n, 1e9);
+    vector<int> dist(n, INF);
     pq.push({0, src});
     dist[src] = 0;
     while (!empty(pq)) {
-        int u = pq.top().second;
+        auto [d, u] = pq.top();
         pq.pop();
+        if (dist[u] != d) continue;
         for (auto [v, w] : g[u]) {
             if (dist[u] + w < dist[v]) {
                 dist[v] = dist[u] + w;
@@ -656,7 +627,6 @@ auto dijkstra = [&](int src) -> vector<int> {
     return dist;
 };
 
-// Bellman-Ford Algo
 auto bellman_ford = [&](int src) -> vector<int> {
     vector<int> dist(n, 1e9);
     dist[src] = 0;
@@ -669,7 +639,6 @@ auto bellman_ford = [&](int src) -> vector<int> {
     return dist;
 };
 
-// Floyd-Warshall Algo
 auto floyd_warshall = [&]() -> vector<vector<int>> {
     vector<vector<int>> dist = g;
     for (int k = 0; k < n; k++) {
@@ -682,7 +651,6 @@ auto floyd_warshall = [&]() -> vector<vector<int>> {
     return dist;
 };
 
-// Kahn's Algo
 auto topo_sort = [&]() -> vector<int> {
     vector<int> indeg(n);
     for (int u = 0; u < n; u++) {
@@ -700,11 +668,9 @@ auto topo_sort = [&]() -> vector<int> {
             if (indeg[v] == 0) q.push(v);
         }
     }
-    reverse(begin(topo), end(topo));
     return topo;
 };
 
-// Kosaraju's Algo
 auto scc = [&]() -> vector<vector<int>> {
     vector<int> topo;
     vector<bool> vis(n);
@@ -729,10 +695,10 @@ auto scc = [&]() -> vector<vector<int>> {
     }
 
     vector<int> who(n, -1);
-    function<void(int, int)> revdfs = [&](int u, int r) {
-        who[u] = r;
+    function<void(int, int)> revdfs = [&](int u, int p) {
+        who[u] = p;
         for (int v : revg[u]) {
-            if (who[v] == -1) revdfs(v, r);
+            if (who[v] == -1) revdfs(v, p);
         }
     };
 
@@ -750,7 +716,6 @@ auto scc = [&]() -> vector<vector<int>> {
     return compg;
 };
 
-// Binary Lifting
 vector<int> dep(n);
 const int LOG = __lg(n) + 1;
 vector<vector<int>> up(n, vector<int>(LOG));
@@ -784,15 +749,14 @@ auto lca = [&](int u, int v) -> int {
     return up[u][0];
 };
 
-// Euler Tour
 int time = -1;
 vector<int> tin(n), tout(n), euler;
 
-function<void(int, int)> dfs = [&](int u, int par) {
+function<void(int, int)> dfs = [&](int u, int p) {
     tin[u] = ++time;
     euler.push_back(u);
-    for (int v : tree[u]) {
-        if (v != par) {
+    for (int v : g[u]) {
+        if (v != p) {
             dfs(v, u);
             euler.push_back(u);
         }
@@ -800,15 +764,35 @@ function<void(int, int)> dfs = [&](int u, int par) {
     tout[u] = ++time;
 };
 
-// Kruskal's Algo
 auto mst = [&]() -> int {
-    sort(begin(g), end(g), [](auto e1, auto e2) {return e1[2] < e2[2];});
+    sort(begin(edges), end(edges), [](auto e1, auto e2) {return e1[2] < e2[2];});
     DSU dsu(n);
-    int res = 0;
-    for (auto e : g) {
+    int res = 0, cnt = 0;
+    for (auto e : edges) {
         if (!dsu.same(e[0], e[1])) {
             dsu.unite(e[0], e[1]);
+            cnt++;
             res += e[2];
+        }
+    }
+    return (cnt == n - 1 ? res : -1);
+};
+
+auto mst = [&]() -> int {
+    vector<int> key(n, INF);
+    key[0] = 0;
+    vector<bool> vis(n);
+    int res = 0;
+    for (int _ = 0; _ < n; _++) {
+        int u = -1;
+        for (int i = 0; i < n; i++) {
+            if (!vis[i] and (u == -1 or key[i] < key[u])) u = i;
+        }
+        if (key[u] == INF) return -1;
+        vis[u] = true;
+        res += key[u];
+        for (int v = 0; v < n; v++) {
+            if (adj[u][v] < key[v]) key[v] = adj[u][v];
         }
     }
     return res;
@@ -818,14 +802,11 @@ auto mst = [&]() -> int {
 Data Structures
 = = = = = = = */
 
-// Segment Tree
 struct SegTree {
     int n;
     vector<int> st;
 
-    int merge(int x, int y) {
-        return x + y;
-    }
+    int merge(int x, int y) {}
 
     int lc(int u) {
         return u * 2 + 1;
@@ -877,14 +858,11 @@ struct SegTree {
     }
 };
 
-// Segment Tree with Lazy Propagation
 struct LazySegTree {
     int n;
     vector<int> st, lazy;
 
-    int merge(int x, int y) {
-        return max(x, y);
-    }
+    int merge(int x, int y) {}
 
     int lc(int u) {
         return u * 2 + 1;
@@ -894,21 +872,9 @@ struct LazySegTree {
         return u * 2 + 2;
     }
 
-    void push(int u, int l, int r) {
-        // if (lazy[u] == -1) return;
-        // st[u] = lazy[u];
-        st[u] = (lazy[u]) * (r - l + 1);
-        if (l != r) {
-            // lazy[lc(u)] = lazy[u];
-            lazy[lc(u)] += lazy[u];
-            // lazy[rc(u)] = lazy[u];
-            lazy[rc(u)] += lazy[u];
-        }
-        // lazy[u] = -1;
-        lazy[u] = 0;
-    }
+    void push(int u, int l, int r) {}
 
-    LazySegTree(vector<int> &a) : n(size(a)), st(n * 4), lazy(n * 4) {
+    LazySegTree(vector<int> &a) : n(size(a)), st(n * 4), lazy(n * 4, -1) {
         build(0, 0, n - 1, a);
     }
 
@@ -928,6 +894,7 @@ struct LazySegTree {
     }
 
     void upd(int u, int l, int r, int ql, int qr, int val) {
+        push(u, l, r);
         if (qr < l or r < ql) return;
         if (ql <= l and r <= qr) {
             lazy[u] += val;
@@ -946,14 +913,13 @@ struct LazySegTree {
 
     int query(int u, int l, int r, int ql, int qr) {
         push(u, l, r);
+        int m = (l + r) / 2;
         if (qr < l or r < ql) return 0;
         if (ql <= l and r <= qr) return st[u];
-        int m = (l + r) / 2;
         return merge(query(lc(u), l, m, ql, qr), query(rc(u), m + 1, r, ql, qr));
     }
 };
 
-// Fenwick Tree (BIT)
 struct FenwickTree {
     int n;
     vector<int> bit;
@@ -962,8 +928,8 @@ struct FenwickTree {
         for (int i = 0; i < n; i++) upd(i, a[i]);
     }
 
-    void upd(int i, int x) {
-        for (i++; i <= n; i += i & -i) bit[i] += x;
+    void upd(int i, int del) {
+        for (i++; i <= n; i += i & -i) bit[i] += del;
     }
 
     int sum(int i) {
@@ -989,10 +955,10 @@ struct FenwickTree2D {
         }
     }
 
-    void upd(int r, int c, int x) {
+    void upd(int r, int c, int del) {
         for (int i = r + 1; i <= n; i += i & -i) {
             for (int j = c + 1; j <= m; j += j & -j) {
-                bit[i][j] += x;
+                bit[i][j] += del;
             }
         }
     }
@@ -1017,9 +983,7 @@ struct SparseTable {
     int n, LOG;
     vector<vector<int>> table;
 
-    int merge(int x, int y) {
-        return min(x, y);
-    }
+    int merge(int x, int y) {}
 
     SparseTable(vector<int> &a) : n(size(a)), LOG(__lg(n)), table(n, vector<int>(LOG + 1, -1)) {
         for (int k = 0; k <= LOG; k++) {
@@ -1082,30 +1046,6 @@ struct SparseTable2D {
     }
 };
 
-// Disjoint Set Union (DSU)
-struct DSU {
-    vector<int> par, size;
-    int comps;
-
-    DSU(int n) : par(n), size(n, 1), comps(n) {
-        iota(begin(par), end(par), 0);
-    }
-
-    void unite(int u, int v) {
-        u = find(u), v = find(v);
-        if (u == v) return;
-        if (size[u] < size[v]) swap(u, v);
-        par[v] = u;
-        size[u] += size[v];
-        comps--;
-    }
-
-    int find(int u) {
-        return (par[u] == u ? u : par[u] = find(par[u]));
-    }
-};
-
-// DSU with Rollbacks
 struct DSU {
     vi par, size;
     int comps;
@@ -1125,19 +1065,22 @@ struct DSU {
         comps--;
     }
 
+    int find(int u) {
+        return (par[u] == u ? u : find(par[u]));
+    }
+
+    bool same(int u, int v) {
+        return find(u) == find(v);
+    }
+
     void roll() {
         int u = st.top();
         st.pop();
         par[u] = u;
         comps++;
     }
+};
 
-    int find(int u) {
-        return (par[u] == u ? u : find(par[u]));
-    }
-}
-
-// Linked List
 struct LinkedList {
     struct Node {
         int data;
@@ -1148,7 +1091,7 @@ struct LinkedList {
         }
     };
 
-    Node * head, *tail;
+    Node *head, *tail;
 
     LinkedList() : head(nullptr), tail(nullptr) {}
 
@@ -1186,15 +1129,12 @@ struct LinkedList {
 Square Root Techniques
 = = = = = = = = = = */
 
-// Sqrt Decomposition
-const int BLOCK = 700;
+const int BLOCK = 300;
 
 vector<int> b(BLOCK);
 for (int i = 0; i < n; i++) b[i / BLOCK] += a[i];
 
 auto query = [&](int l, int r) -> int {
-    int l, r;
-    cin >> l >> r;
     int res = 0;
     int i = l;
     while (i <= r) {
@@ -1208,36 +1148,28 @@ auto query = [&](int l, int r) -> int {
     return res;
 };
 
-// Mo's Algo
-const int BLOCK_SIZE = 700;
-
 struct Query {
     int l, r, idx;
-    bool operator<(Query other) const {
-        int b1 = l / BLOCK_SIZE, b2 = other.l / BLOCK_SIZE;
-        return make_pair(b1, (b1 % 2 == 0 ? r : -r)) < make_pair(b2, (b2 % 2 == 0 ? other.r : -other.r));
+    bool operator<(Query q2) const {
+        int b1 = l / BLOCK, b2 = q2.l / BLOCK;
+        return make_pair(b1, (b1 % 2 == 0 ? r : -r)) < make_pair(b2, (b2 % 2 == 0 ? q2.r : -q2.r));
     }
 };
 
 vector<Query> qs(q);
 for (int i = 0; i < q; i++) {
-    cin >> qs[i].l >> qs[i].r;
-    qs[i].l--, qs[i].r--;
-    qs[i].idx = i;
+    Query &q = qs[i];
+    cin >> q.l >> q.r;
+    q.l--, q.r--;
+    q.idx = i;
 }
 
 auto mos = [&]() -> vector<int> {
-
     sort(begin(qs), end(qs));
-
     auto add = [&](int i) -> void {};
-
     auto del = [&](int i) -> void {};
-
     auto get_ans = [&]() -> int {};
-
     vector<int> ans(size(qs));
-
     int l = 0, r = -1;
     for (Query q : qs) {
         while (l > q.l) add(--l);
@@ -1246,7 +1178,6 @@ auto mos = [&]() -> vector<int> {
         while (r > q.r) del(r--);
         ans[q.idx] = get_ans();
     }
-
     return ans;
 };
 
@@ -1257,7 +1188,6 @@ for (int i : mos()) cout << i << endl;
 Stacks & Queues
 = = = = = = */
 
-// Next Greater Element
 vector<int> next_greater_element(vector<int> &a) {
     int n = size(a);
     vector<int> nge(n);
@@ -1270,7 +1200,6 @@ vector<int> next_greater_element(vector<int> &a) {
     return nge;
 }
 
-// Sliding Window Minimums
 vector<int> sliding_window_min(vector<int> &a, int k) {
     deque<int> dq;
     vector<int> mins;
@@ -1281,20 +1210,4 @@ vector<int> sliding_window_min(vector<int> &a, int k) {
         if (i >= k - 1) mins.push_back(a[dq.front()]);
     }
     return mins;
-}
-
-// Bracket Matching
-bool balanced(string & s) {
-    stack<char> st;
-    const vector<char> OPEN = {'(', '{', '['};
-    const map<char, char> CLOSE = {{'(', ')'}, {'{', '}'}, {'[', ']'}};
-    for (char c : s) {
-        if (OPEN.count(c)) {
-            st.push(c);
-        } else {
-            if (empty(st) or CLOSE[st.top()] != c) return false;
-            st.pop();
-        }
-    }
-    return empty(st);
 }
