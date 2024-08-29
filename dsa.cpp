@@ -2,8 +2,6 @@
 AUTHOR: SINGLABHARAT
 = = = = = = = = = */
 
-// convex hull, dp optimizations, iterative segtree, small to large merging, bridges/articulation pts, centroid decomp
-
 /* = =
 Arrays
 = = */
@@ -351,7 +349,7 @@ Mint C(int n, int r) {
     return fact[n] / fact[r] / fact[n - r];
 }
 
-fact.resize(MX);
+fact.resize(1e5);
 fact[0] = 1;
 for (int i = 1; i < MX; i++) fact[i] = fact[i - 1] * i;
 
@@ -474,7 +472,6 @@ int edit_distance(string &s, string &t) {
     return dp[n][m];
 }
 
-// Digit DP
 vector<int> digts(int n) {
     vector<int> d;
     while (n > 0) {
@@ -537,23 +534,6 @@ for (int i = 0; i < m; i++) {
     g[u].push_back(pair(v, w));
     g[v].push_back(pair(u, w));
 }
-
-auto bfs = [&](int src) -> void {
-    vector<bool> vis(n);
-    queue<int> q;
-    q.push(src);
-    vis[src] = true;
-    while (!empty(q)) {
-        int u = q.front();
-        q.pop();
-        for (int v : g[u]) {
-            if (!vis[v]) {
-                vis[v] = true;
-                q.push(v);
-            }
-        }
-    }
-};
 
 vector<bool> vis(n);
 function<void(int)> dfs = [&](int u) {
@@ -764,7 +744,7 @@ function<void(int, int)> dfs = [&](int u, int p) {
     tout[u] = ++time;
 };
 
-auto mst = [&]() -> int {
+auto kruskals_mst = [&]() -> int {
     sort(begin(edges), end(edges), [](auto e1, auto e2) {return e1[2] < e2[2];});
     DSU dsu(n);
     int res = 0, cnt = 0;
@@ -778,7 +758,7 @@ auto mst = [&]() -> int {
     return (cnt == n - 1 ? res : -1);
 };
 
-auto mst = [&]() -> int {
+auto prims_mst = [&]() -> int {
     vector<int> key(n, INF);
     key[0] = 0;
     vector<bool> vis(n);
@@ -978,7 +958,6 @@ struct FenwickTree2D {
     }
 };
 
-// Sparse Table
 struct SparseTable {
     int n, LOG;
     vector<vector<int>> table;
@@ -1180,8 +1159,6 @@ auto mos = [&]() -> vector<int> {
     }
     return ans;
 };
-
-for (int i : mos()) cout << i << endl;
 
 
 /* = = = = = =
