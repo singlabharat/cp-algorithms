@@ -1,2 +1,4 @@
 # CP Algorithms
-Lucid C++ codes for standard DSA
+
+Neat self-written C++ codes for most widely used DSA in Competitive Programming
+

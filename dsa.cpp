@@ -2,7 +2,7 @@
 AUTHOR: SINGLABHARAT
 = = = = = = = = = */
 
-// convex hull, dp optimizations, iterative segtree, small to large merging, bridges/articulation pts, centroid decomp
+// to add: convex hull, dp optimizations, iterative segtree, small to large merging, bridges/articulation pts, centroid decomp
 
 /* = =
 Arrays
@@ -39,7 +39,7 @@ vector<int> suff_sums(vector<int> &a) {
 }
 
 int max_subarr_sum(vector<int> &a) {
-    int res = -1e9, curr = 0;
+    int res = -INF, curr = 0;
     for (int i : a) {
         curr = max(curr + i, i);
         res = max(res, curr);
@@ -167,7 +167,9 @@ int binary_search(int x, vector<int> &a) {
     return -1;
 }
 
-auto ok = [&](int m) -> bool {};
+auto ok = [&](int m) -> bool {
+
+};
 
 auto binary_search = [&]() -> int {
     int res = -1, l = 0, r = 1e9;
@@ -370,7 +372,7 @@ pair<int, int> extended_gcd(int a, int b) {
 Strings
 = = = */
 
-Mint my_hash(string s) {
+Mint hash(string s) {
     int n = size(s);
     Mint h = 0;
     for (int i = 0; i < n; i++) h = h * 31 + (s[i] - 'a' + 1);
@@ -380,8 +382,8 @@ Mint my_hash(string s) {
 vector<int> rabin_karp(string &s, string &t) {
     int n = size(s), m = size(t);
     Mint p = power(Mint(31), m - 1);
-    Mint ht = my_hash(t);
-    Mint hs = my_hash(s.substr(0, m));
+    Mint ht = hash(t);
+    Mint hs = hash(s.substr(0, m));
     vector<int> pos;
     if (hs == ht) pos.push_back(0);
     for (int l = 1, r = m; r < n; l++, r++) {
@@ -394,10 +396,15 @@ vector<int> rabin_karp(string &s, string &t) {
 vector<int> pref_func(string &s) {
     int n = size(s);
     vector<int> lps(n);
-    for (int i = 1; i < n; i++) {
-        int j = lps[i - 1];
-        while (j > 0 and s[j] != s[i]) j = lps[j - 1];
-        lps[i] = j + (s[j] == s[i]);
+    int l = 0, r = 1;
+    while (r < n) {
+        if (s[r] == s[l]) {
+            lps[r] = l + 1;
+            l++, r++;
+        } else {
+            if (l > 0) l = lps[l - 1];
+            else r++;
+        }
     }
     return lps;
 }
@@ -412,6 +419,58 @@ vector<int> kmp(string &s, string &t) {
     }
     return pos;
 }
+
+struct Trie {
+    struct Node {
+        int cnt = 0, pcnt = 0;
+        Node *child[26];
+    };
+
+    Node *root;
+
+    Trie() {
+        root = new Node();
+    }
+
+    void add(string s) {
+        Node *node = root;
+        for (char c : s) {
+            if (!node->child[c - 'a']) {
+                node->child[c - 'a'] = new Node();
+            }
+            node = node->child[c - 'a'];
+            node->pcnt++;
+        }
+        node->cnt++;
+    }
+
+    void del(string s) {
+        Node *node = root;
+        for (char c : s) {
+            node = node->child[c - 'a'];
+            node->pcnt--;
+        }
+        node->cnt--;
+    }
+
+    int pref_count(string s) {
+        Node *node = root;
+        for (char c : s) {
+            if (!node->child[c - 'a']) return 0;
+            node = node->child[c - 'a'];
+        }
+        return node->pcnt;
+    }
+
+    int match_count(string s) {
+        Node *node = root;
+        for (char c : s) {
+            if (!node->child[c - 'a']) return 0;
+            node = node->child[c - 'a'];
+        }
+        return node->cnt;
+    }
+};
 
 /* = = = = = = = = = = =
 Dynamic Programming (DP)
@@ -475,7 +534,7 @@ int edit_distance(string &s, string &t) {
 }
 
 // Digit DP
-vector<int> digts(int n) {
+vector<int> digits(int n) {
     vector<int> d;
     while (n > 0) {
         d.push_back(n % 10);
@@ -485,14 +544,14 @@ vector<int> digts(int n) {
     return d;
 }
 
-int dp[19][163][2];
+int dp[20][180][2];
 
 int rec(int pos, int sod, bool tight, vector<int> &num) {
-    if (pos == size(num)) return sod == ?;
+    if (pos == size(num)) return sod == 42;
     int &res = dp[pos][sod][tight];
     if (res != -1) return res;
     res = 0;
-    int lim = (tight ? num[pos] : 9);
+    int lim = tight ? num[pos] : 9;
     for (int d = 0; d <= lim; d++) {
         int new_sod = sod + d;
         bool new_tight = tight and d == lim;
@@ -503,10 +562,10 @@ int rec(int pos, int sod, bool tight, vector<int> &num) {
 
 int digit_dp(int l, int r) {
     memset(dp, -1, sizeof(dp));
-    vector<int> dl = digts(l - 1);
-    int ansl = (l == 0 ? 0 : rec(0, 0, true, dl));
+    vector<int> dl = digits(l - 1);
+    int ansl = rec(0, 0, true, dl);
     memset(dp, -1, sizeof(dp));
-    vector<int> dr = digts(r);
+    vector<int> dr = digits(r);
     int ansr = rec(0, 0, true, dr);
     return ansr - ansl;
 }
@@ -628,12 +687,17 @@ auto dijkstra = [&](int src) -> vector<int> {
 };
 
 auto bellman_ford = [&](int src) -> vector<int> {
-    vector<int> dist(n, 1e9);
+    vector<int> dist(n, INF);
     dist[src] = 0;
-    for (int _ = 0; _ < n - 1; _++) {
+    bool any = true;
+    while (any) {
+        any = false;
         for (auto e : edges) {
             int u = e[0], v = e[1], w = e[2];
-            if (dist[u] + w < dist[v]) dist[v] = dist[u] + w;
+            if (dist[u] != INF and dist[u] + w < dist[v]) {
+                dist[v] = dist[u] + w;
+                any = true;
+            }
         }
     }
     return dist;
@@ -775,7 +839,7 @@ auto mst = [&]() -> int {
             res += e[2];
         }
     }
-    return (cnt == n - 1 ? res : -1);
+    return cnt == n - 1 ? res : -1;
 };
 
 auto mst = [&]() -> int {
@@ -796,6 +860,121 @@ auto mst = [&]() -> int {
         }
     }
     return res;
+};
+
+struct MaxFlow {
+    int n, s, t;
+    vector<vector<int>> g, flow, cap;
+    vector<int> par;
+
+    MaxFlow(int _n, int _s, int _t) : n(_n), s(_s), t(_t),
+        g(n), flow(n, vector<int>(n)), cap(n, vector<int>(n)) {}
+
+    int bfs() {
+        par.assign(n, -1);
+        queue<pair<int, int>> q;
+        q.push({s, INF});
+        while (!empty(q)) {
+            auto [u, f] = q.front();
+            q.pop();
+            for (int v : g[u]) {
+                if (par[v] == -1 and flow[u][v] < cap[u][v]) {
+                    int newf = min(f, cap[u][v] - flow[u][v]);
+                    q.push({v, newf});
+                    par[v] = u;
+                    if (v == t) return newf;
+                }
+            }
+        }
+        return 0;
+    }
+
+    void add_edge(int u, int v, int c) {
+        g[u].push_back(v);
+        g[v].push_back(u);
+        cap[u][v] += c;
+    }
+
+    int get_flow() {
+        int tot_f = 0;
+        while (int f = bfs()) {
+            tot_f += f;
+            int u = t;
+            while (u != s) {
+                int p = par[u];
+                flow[p][u] += f;
+                flow[u][p] -= f;
+                u = p;
+            }
+        }
+        return tot_f;
+    }
+};
+
+struct MinCostMaxFlow {
+    int n, s, t;
+    vector<vector<int>> g, flow, cap, cost;
+    vector<int> par, dist;
+
+    MinCostMaxFlow(int _n, int _s, int _t): n(_n), s(_s), t(_t),
+        g(n), flow(n, vector<int>(n)), cap(n, vector<int>(n)), cost(n, vector<int>(n)) {}
+
+    void add_edge(int u, int v, int c, int w) {
+        g[u].push_back(v);
+        g[v].push_back(u);
+        cap[u][v] += c;
+        cost[u][v] += w;
+        cost[v][u] -= w;
+    }
+
+    bool spfa() {
+        par.assign(n, -1);
+        dist.assign(n, INF);
+        vector<bool> inq(n);
+        queue<int> q;
+        q.push(s);
+        dist[s] = 0;
+        inq[s] = true;
+        while (!empty(q)) {
+            int u = q.front();
+            q.pop();
+            inq[u] = false;
+            for (int v : g[u]) {
+                if (flow[u][v] < cap[u][v] and dist[u] + cost[u][v] < dist[v]) {
+                    dist[v] = dist[u] + cost[u][v];
+                    par[v] = u;
+                    if (!inq[v]) {
+                        q.push(v);
+                        inq[v] = true;
+                    }
+                }
+            }
+        }
+        return dist[t] != INF;
+    }
+
+    int get_cost(int k = INF) {
+        int tot_f = 0, tot_c = 0;
+        while (spfa() and tot_f < k) {
+            int f = k - tot_f;
+            int u = t;
+            while (u != s) {
+                int p = par[u];
+                f = min(f, cap[p][u] - flow[p][u]);
+                u = p;
+            }
+            u = t;
+            while (u != s) {
+                int p = par[u];
+                flow[p][u] += f;
+                flow[u][p] -= f;
+                tot_c += cost[p][u] * f;
+                u = p;
+            }
+            tot_f += f;
+        }
+        return tot_c;
+    }
 };
 
 /* = = = = = = =
@@ -874,7 +1053,7 @@ struct LazySegTree {
 
     void push(int u, int l, int r) {}
 
-    LazySegTree(vector<int> &a) : n(size(a)), st(n * 4), lazy(n * 4, -1) {
+    LazySegTree(vector<int> &a) : n(size(a)), st(n * 4), lazy(n * 4) {
         build(0, 0, n - 1, a);
     }
 
@@ -978,7 +1157,6 @@ struct FenwickTree2D {
     }
 };
 
-// Sparse Table
 struct SparseTable {
     int n, LOG;
     vector<vector<int>> table;
@@ -1047,37 +1225,28 @@ struct SparseTable2D {
 };
 
 struct DSU {
-    vi par, size;
+    vector<int> par, sz;
     int comps;
-    stack<int> st;
 
-    DSU(int n) : par(n), size(n, 1), comps(n) {
+    DSU(int n) : par(n), sz(n, 1), comps(n) {
         iota(begin(par), end(par), 0);
     }
 
     void unite(int u, int v) {
         u = find(u), v = find(v);
         if (u == v) return;
-        if (size[u] < size[v]) swap(u, v);
-        st.push(v);
+        if (sz[u] < sz[v]) swap(u, v);
         par[v] = u;
-        size[u] += size[v];
+        sz[u] += sz[v];
         comps--;
     }
 
     int find(int u) {
-        return (par[u] == u ? u : find(par[u]));
+        return (par[u] == u ? u : par[u] = find(par[u]));
     }
 
     bool same(int u, int v) {
         return find(u) == find(v);
-    }
-
-    void roll() {
-        int u = st.top();
-        st.pop();
-        par[u] = u;
-        comps++;
     }
 };
 
@@ -1085,45 +1254,68 @@ struct LinkedList {
     struct Node {
         int data;
         Node *next;
-        Node(int d) {
-            data = d;
-            next = nullptr;
-        }
+        Node *prev;
+        Node(int d) : data(d), next(NULL), prev(NULL) {}
     };
 
     Node *head, *tail;
+    int size;
 
-    LinkedList() : head(nullptr), tail(nullptr) {}
+    LinkedList() : head(NULL), tail(NULL), size(0) {}
 
-    void append(int d) {
+    void push_back(int d) {
         Node *new_node = new Node(d);
-        if (head == nullptr) {
+        size++;
+        if (!head) {
             head = tail = new_node;
             return;
         }
         tail->next = new_node;
+        new_node->prev = tail;
         tail = new_node;
     }
 
-    void prepend(int d) {
+    void pop_back() {
+        if (head == NULL) return;
+        size--;
+        if (head == tail) {
+            head = tail = NULL;
+            return;
+        }
+        tail = tail->prev;
+        tail->next = NULL;
+    }
+
+    void push_front(int d) {
         Node *new_node = new Node(d);
-        if (head == nullptr) {
+        size++;
+        if (!head) {
             head = tail = new_node;
             return;
         }
         new_node->next = head;
+        head->prev = new_node;
         head = new_node;
     }
 
+    void pop_front() {
+        if (!head) return;
+        size--;
+        head = head->next;
+        if (head) head->prev = NULL;
+        else tail = NULL;
+    }
+
     void print() {
-        Node *curr_node = head;
-        while (curr_node != nullptr) {
-            cout << curr_node->data << "->";
-            curr_node = curr_node->next;
+        Node *curr = head;
+        while (curr) {
+            cout << curr->data << "->";
+            curr = curr->next;
         }
         cout << "NULL\n";
     }
 };
+
 
 /* = = = = = = = = = =
 Square Root Techniques
