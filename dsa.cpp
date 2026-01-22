@@ -35,7 +35,7 @@ vector<int> suff_sums(vector<int> &a) {
     int n = size(a);
     vector<int> ss = a;
     for (int i = n - 2; i >= 0; i--) ss[i] += ss[i + 1];
-    return s;
+    return ss;
 }
 
 int max_subarr_sum(vector<int> &a) {
@@ -767,7 +767,7 @@ auto scc = [&]() -> vector<vector<int>> {
     };
 
     for (int u : topo) {
-        if (who[u] == -1) dfsrev(u, u);
+        if (who[u] == -1) revdfs(u, u);
     }
 
     vector<vector<int>> compg(n);
@@ -1350,10 +1350,10 @@ struct Query {
 
 vector<Query> qs(q);
 for (int i = 0; i < q; i++) {
-    Query &q = qs[i];
-    cin >> q.l >> q.r;
-    q.l--, q.r--;
-    q.idx = i;
+    Query &query = qs[i];
+    cin >> query.l >> query.r;
+    query.l--, query.r--;
+    query.idx = i;
 }
 
 auto mos = [&]() -> vector<int> {
@@ -1363,12 +1363,12 @@ auto mos = [&]() -> vector<int> {
     auto get_ans = [&]() -> int {};
     vector<int> ans(size(qs));
     int l = 0, r = -1;
-    for (Query q : qs) {
-        while (l > q.l) add(--l);
-        while (r < q.r) add(++r);
-        while (l < q.l) del(l++);
-        while (r > q.r) del(r--);
-        ans[q.idx] = get_ans();
+    for (Query query : qs) {
+        while (l > query.l) add(--l);
+        while (r < query.r) add(++r);
+        while (l < query.l) del(l++);
+        while (r > query.r) del(r--);
+        ans[query.idx] = get_ans();
     }
     return ans;
 };
