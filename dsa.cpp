@@ -533,7 +533,6 @@ int edit_distance(string &s, string &t) {
     return dp[n][m];
 }
 
-// Digit DP
 vector<int> digits(int n) {
     vector<int> d;
     while (n > 0) {
