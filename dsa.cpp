@@ -353,7 +353,7 @@ Mint C(int n, int r) {
     return fact[n] / fact[r] / fact[n - r];
 }
 
-fact.resize(MX);
+fact.resize(1e5);
 fact[0] = 1;
 for (int i = 1; i < MX; i++) fact[i] = fact[i - 1] * i;
 
@@ -597,23 +597,6 @@ for (int i = 0; i < m; i++) {
     g[v].push_back(pair(u, w));
 }
 
-auto bfs = [&](int src) -> void {
-    vector<bool> vis(n);
-    queue<int> q;
-    q.push(src);
-    vis[src] = true;
-    while (!empty(q)) {
-        int u = q.front();
-        q.pop();
-        for (int v : g[u]) {
-            if (!vis[v]) {
-                vis[v] = true;
-                q.push(v);
-            }
-        }
-    }
-};
-
 vector<bool> vis(n);
 function<void(int)> dfs = [&](int u) {
     vis[u] = true;
@@ -828,7 +811,7 @@ function<void(int, int)> dfs = [&](int u, int p) {
     tout[u] = ++time;
 };
 
-auto mst = [&]() -> int {
+auto kruskals_mst = [&]() -> int {
     sort(begin(edges), end(edges), [](auto e1, auto e2) {return e1[2] < e2[2];});
     DSU dsu(n);
     int res = 0, cnt = 0;
@@ -842,7 +825,7 @@ auto mst = [&]() -> int {
     return cnt == n - 1 ? res : -1;
 };
 
-auto mst = [&]() -> int {
+auto prims_mst = [&]() -> int {
     vector<int> key(n, INF);
     key[0] = 0;
     vector<bool> vis(n);
@@ -1372,8 +1355,6 @@ auto mos = [&]() -> vector<int> {
     }
     return ans;
 };
-
-for (int i : mos()) cout << i << endl;
 
 
 /* = = = = = =
